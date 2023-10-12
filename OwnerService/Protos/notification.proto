@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "OwnerService";
+
+service Notification {
+    rpc SendNotification(NotificationRequest) returns (NotificationResponse);
+}
+
+message NotificationRequest {
+    repeated string type = 1;
+    repeated string petIds = 2;
+    string message = 3;
+}
+
+message NotificationResponse {
+    string message = 1;
+}
