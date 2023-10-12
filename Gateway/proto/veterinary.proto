@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "./veterinary/pb";
+
+import "google/protobuf/timestamp.proto";
+
+service Veterinary {
+  rpc MakeAppointment (MakeAppointmentRequest) returns (MakeAppointmentResponse);
+  rpc EndAppointment (EndAppointmentRequest) returns (EndAppointmentResponse);
+}
+
+message MakeAppointmentRequest {
+  string petId = 1;
+  google.protobuf.Timestamp dateTime = 2;
+}
+
+message MakeAppointmentResponse {
+  string message = 1;
+}
+
+message EndAppointmentRequest {
+  string appointmentId = 1;
+  string details = 2;
+}
+
+message EndAppointmentResponse {
+  string message = 1;
+}

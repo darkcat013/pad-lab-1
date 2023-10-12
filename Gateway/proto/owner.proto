@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = "./owner/pb";
+
+service Owner {
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc RegisterPet(RegisterPetRequest) returns (RegisterPetResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message RegisterRequest {
+    string email = 1;
+}
+
+message RegisterResponse {
+    string message = 1;
+}
+
+message RegisterPetRequest {
+    string ownerId = 1;
+    string type = 2;
+    string race = 3;
+    string name = 4;
+}
+
+message RegisterPetResponse {
+    string message = 1;
+}
+
+message DeleteRequest {
+    string id = 1;
+}
+
+message DeleteResponse {
+    string message = 1;
+}
