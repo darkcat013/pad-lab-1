@@ -10,8 +10,14 @@ services:
     environment:
       SA_PASSWORD: "123qweASD"
       ACCEPT_EULA: "Y"
+  
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
 
   owner:
+    image: darkcat013/owner:latest
     build:
       context: ./OwnerService
       dockerfile: Dockerfile
@@ -22,6 +28,7 @@ services:
       - 32768:443
 
   vet:
+    image: darkcat013/vet:latest
     build:
       context: ./VeterinaryService
       dockerfile: Dockerfile
@@ -32,12 +39,14 @@ services:
       - 32770:443
 
   gateway:
+    image: darkcat013/gateway:latest
     build:
       context: ./Gateway
       dockerfile: Dockerfile
     depends_on:
       - owner
       - vet
+      - redis
     ports:
       - 8080:8080
   
