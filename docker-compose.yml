@@ -1,0 +1,43 @@
+services:
+  owner-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "123qweASD"
+      ACCEPT_EULA: "Y"
+
+  vet-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "123qweASD"
+      ACCEPT_EULA: "Y"
+
+  owner:
+    build:
+      context: ./OwnerService
+      dockerfile: Dockerfile
+    depends_on:
+      - owner-db
+    ports:
+      - 32769:80
+      - 32768:443
+
+  vet:
+    build:
+      context: ./VeterinaryService
+      dockerfile: Dockerfile
+    depends_on:
+      - vet-db
+    ports:
+      - 32771:80
+      - 32770:443
+
+  gateway:
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - owner
+      - vet
+    ports:
+      - 8080:8080
+  

@@ -11,8 +11,8 @@ type Config struct {
 	Port        string `env:"SERVER_PORT" envDefault:"8080"`
 	AllowOrigin string `env:"ALLOW_ORIGIN" envDefault:"*"`
 
-	OwnerUrl              string `env:"OWNER_URL" envDefault:"localhost:5171"`
-	VeterinaryUrl         string `env:"VET_URL" envDefault:"localhost:5172"`
+	OwnerUrl              string `env:"OWNER_URL" envDefault:"localhost:32769"`
+	VeterinaryUrl         string `env:"VET_URL" envDefault:"localhost:32771"`
 	RedisConnectionString string `env:"REDIS_CONNECTION_STRING" envDefault:""`
 }
 
