@@ -1,5 +1,32 @@
 # Laboratory work nr. 1 on Distributed Systems Programming
 
+## Setup
+
+- Install [Docker](https://docs.docker.com/engine/install/)
+- Make sure kubernetes is turned on in docker (Settings -> Kubernetes -> Enable -> Apply)
+- Install [Linkerd](https://linkerd.io/2.14/getting-started/) (for load balancing)
+
+Run the commands
+
+```ps
+linkerd install --crds | kubectl apply -f -
+linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
+```
+
+## Start the app
+
+```ps
+linkerd inject k8s.yaml | kubectl apply -f -
+```
+
+Enjoy.
+
+## Stop the app
+
+```ps
+linkerd uninject k8s.yaml | kubectl delete -f -
+```
+
 ## Veterinary clinics services and pet data management
 
 Distributed app for veterinary clinics and pet data management. Includes pet registration, appointments, notifications/emails about pet vaccination, pet records update after each consultation.
