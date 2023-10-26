@@ -10,9 +10,10 @@ import (
 )
 
 type OwnerService interface {
-	SendRegisterRequest(request *pb.RegisterRequest) (string, error)
+	SendRegisterRequest(request *pb.RegisterRequest) (*pb.RegisterResponse, error)
 	SendRegisterPetRequest(request *pb.RegisterPetRequest) (string, error)
 	SendDeleteRequest(request *pb.DeleteRequest) (string, error)
+	SendGetPetsRequest(request *pb.GetPetsRequest) (*pb.GetPetsResponse, error)
 }
 
 type ownerService struct {
@@ -32,7 +33,7 @@ func NewOwnerService(cfg config.Config) OwnerService {
 	return &ownerService{client}
 }
 
-func (s *ownerService) SendRegisterRequest(request *pb.RegisterRequest) (string, error) {
+func (s *ownerService) SendRegisterRequest(request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 
 	ctx, cancel := utils.GetDeadlineContext()
 	defer cancel()
@@ -40,10 +41,10 @@ func (s *ownerService) SendRegisterRequest(request *pb.RegisterRequest) (string,
 	response, err := s.client.Register(ctx, request)
 	if err != nil {
 		log.Error().Err(err).Msg("Error calling Register")
-		return response.Message, err
+		return response, err
 	}
 
-	return response.Message, err
+	return response, err
 }
 
 func (s *ownerService) SendRegisterPetRequest(request *pb.RegisterPetRequest) (string, error) {
@@ -72,4 +73,18 @@ func (s *ownerService) SendDeleteRequest(request *pb.DeleteRequest) (string, err
 	}
 
 	return response.Message, err
+}
+
+func (s *ownerService) SendGetPetsRequest(request *pb.GetPetsRequest) (*pb.GetPetsResponse, error) {
+
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
+
+	response, err := s.client.GetPets(ctx, request)
+	if err != nil {
+		log.Error().Err(err).Msg("Error calling GetPets")
+		return response, err
+	}
+
+	return response, err
 }

@@ -9,7 +9,7 @@ func GetRateLimitStore(cfg config.Config) *redis.Client {
 	rateLimitStore := redis.NewClient(&redis.Options{
 		Addr:     cfg.RedisConnectionString,
 		Password: "",
-		DB:       0,
+		DB:       cfg.RedisRateLimitDb,
 	})
 
 	return rateLimitStore

@@ -57,7 +57,7 @@ func (s *testService) TestRateLimit(request *pb.TestRateLimitRequest) (string, e
 		return "Rate limit achieved", err
 	}
 
-	return "Rate limit not working", err
+	return "Rate limit test", err
 }
 
 func (s *testService) TestCircuitBreaker(request *pb.TestCircuitBreakerRequest) (string, error) {

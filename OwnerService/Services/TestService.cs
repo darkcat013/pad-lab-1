@@ -10,20 +10,20 @@ namespace OwnerService.Services
             _logger = logger;
         }
 
-        public override Task<TestTimeoutResponse> TestTimeout(TestTimeoutRequest request, ServerCallContext context)
+        public override async Task<TestTimeoutResponse> TestTimeout(TestTimeoutRequest request, ServerCallContext context)
         {
             Thread.Sleep(3000);
-            return Task.FromResult(new TestTimeoutResponse());
+            return new TestTimeoutResponse();
         }
 
-        public override Task<TestRateLimitResponse> TestRateLimit(TestRateLimitRequest request, ServerCallContext context)
+        public override async Task<TestRateLimitResponse> TestRateLimit(TestRateLimitRequest request, ServerCallContext context)
         {
-            return Task.FromResult(new TestRateLimitResponse());
+            return new TestRateLimitResponse();
         }
 
-        public override Task<TestCircuitBreakerResponse> TestCircuitBreaker(TestCircuitBreakerRequest request, ServerCallContext context)
+        public override async Task<TestCircuitBreakerResponse> TestCircuitBreaker(TestCircuitBreakerRequest request, ServerCallContext context)
         {
-            return Task.FromResult(new TestCircuitBreakerResponse());
+            throw new Exception();
         }
     }
 }

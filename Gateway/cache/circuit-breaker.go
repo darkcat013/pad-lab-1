@@ -5,12 +5,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func GetCacheStore(cfg config.Config) *redis.Client {
-	cacheStore := redis.NewClient(&redis.Options{
+func GetCircuitBreakerStore(cfg config.Config) *redis.Client {
+	circuitBreakerStore := redis.NewClient(&redis.Options{
 		Addr:     cfg.RedisConnectionString,
 		Password: "",
-		DB:       cfg.RedisCacheDb,
+		DB:       2,
 	})
 
-	return cacheStore
+	return circuitBreakerStore
 }

@@ -25,18 +25,21 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to load config")
 	}
 
+	cacheStore := cache.GetCacheStore(cfg)
+	rateLimitStore := cache.GetRateLimitStore(cfg)
+
 	ownerService := owner.NewOwnerService(cfg)
-	ownerController := controllers.NewOwnerController(ownerService)
+	ownerController := controllers.NewOwnerController(ownerService, cacheStore)
 
 	veterinaryService := veterinary.NewVeterinaryService(cfg)
-	veterinaryController := controllers.NewVeterinaryController(veterinaryService)
+	veterinaryController := controllers.NewVeterinaryController(veterinaryService, cacheStore)
 
 	testService := test.NewTestService(cfg)
-	testController := controllers.NewTestController(testService)
+	testController := controllers.NewTestController(testService, cacheStore)
 
-	rateLimitClient := cache.GetRateLimitStore(cfg)
+	statusController := controllers.NewStatusController()
 
-	srv := api.NewServer(cfg, ownerController, veterinaryController, testController, rateLimitClient)
+	srv := api.NewServer(cfg, ownerController, veterinaryController, testController, statusController, rateLimitStore)
 
 	go func() {
 		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {

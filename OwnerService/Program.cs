@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OwnerService.Domain;
+using OwnerService.Repos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddGrpc();
 builder.Services.AddDbContext<OwnerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"))
             .UseLazyLoadingProxies());
+builder.Services.AddScoped<IOwnerRepo, OwnerRepo>();
 
 var app = builder.Build();
 

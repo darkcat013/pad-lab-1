@@ -15,6 +15,7 @@ func NewServer(cfg config.Config,
 	ownerController controllers.OwnerController,
 	veterinaryController controllers.VeterinaryController,
 	testController controllers.TestController,
+	statusController controllers.StatusController,
 	rateLimitStore *redis.Client) *http.Server {
 
 	log.Info().Msg("Creating new server")
@@ -30,6 +31,7 @@ func NewServer(cfg config.Config,
 	registerOwnerRoutes(r, ownerController)
 	registerVeterinaryRoutes(r, veterinaryController)
 	registerTestRoutes(r, testController)
+	registerStatusRoutes(r, statusController)
 
 	return &http.Server{
 		Addr:    ":" + cfg.Port,
@@ -42,6 +44,7 @@ func registerOwnerRoutes(router *gin.RouterGroup, c controllers.OwnerController)
 	r.POST("/register", c.Register)
 	r.POST("/register-pet", c.RegisterPet)
 	r.DELETE("/remove-data/:id", c.Delete)
+	r.GET("/:id/pets", c.GetPets)
 }
 
 func registerVeterinaryRoutes(router *gin.RouterGroup, c controllers.VeterinaryController) {
@@ -55,4 +58,8 @@ func registerTestRoutes(router *gin.RouterGroup, c controllers.TestController) {
 	r.GET("/timeout", c.TestTimeout)
 	r.GET("/rate-limit", c.TestRateLimit)
 	r.GET("/circuit-breaker", c.TestCircuitBreaker)
+}
+
+func registerStatusRoutes(router *gin.RouterGroup, c controllers.StatusController) {
+	router.GET("/status", c.Status)
 }

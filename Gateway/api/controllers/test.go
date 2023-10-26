@@ -6,6 +6,7 @@ import (
 	"github.com/darkcat013/pad-lab-1/Gateway/services/test"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/test/pb"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 )
 
@@ -16,13 +17,14 @@ type TestController interface {
 }
 
 type testController struct {
-	service test.TestService
+	service    test.TestService
+	cacheStore *redis.Client
 }
 
-func NewTestController(service test.TestService) TestController {
+func NewTestController(service test.TestService, cacheStore *redis.Client) TestController {
 	log.Info().Msg("Creating new test controller")
 
-	return &testController{service}
+	return &testController{service, cacheStore}
 }
 
 func (c *testController) TestTimeout(ctx *gin.Context) {

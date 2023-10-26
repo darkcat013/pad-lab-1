@@ -22,6 +22,7 @@ const (
 	Owner_Register_FullMethodName    = "/Owner/Register"
 	Owner_RegisterPet_FullMethodName = "/Owner/RegisterPet"
 	Owner_Delete_FullMethodName      = "/Owner/Delete"
+	Owner_GetPets_FullMethodName     = "/Owner/GetPets"
 )
 
 // OwnerClient is the client API for Owner service.
@@ -31,6 +32,7 @@ type OwnerClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	RegisterPet(ctx context.Context, in *RegisterPetRequest, opts ...grpc.CallOption) (*RegisterPetResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	GetPets(ctx context.Context, in *GetPetsRequest, opts ...grpc.CallOption) (*GetPetsResponse, error)
 }
 
 type ownerClient struct {
@@ -68,6 +70,15 @@ func (c *ownerClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grp
 	return out, nil
 }
 
+func (c *ownerClient) GetPets(ctx context.Context, in *GetPetsRequest, opts ...grpc.CallOption) (*GetPetsResponse, error) {
+	out := new(GetPetsResponse)
+	err := c.cc.Invoke(ctx, Owner_GetPets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OwnerServer is the server API for Owner service.
 // All implementations must embed UnimplementedOwnerServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type OwnerServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	RegisterPet(context.Context, *RegisterPetRequest) (*RegisterPetResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	GetPets(context.Context, *GetPetsRequest) (*GetPetsResponse, error)
 	mustEmbedUnimplementedOwnerServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedOwnerServer) RegisterPet(context.Context, *RegisterPetRequest
 }
 func (UnimplementedOwnerServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedOwnerServer) GetPets(context.Context, *GetPetsRequest) (*GetPetsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPets not implemented")
 }
 func (UnimplementedOwnerServer) mustEmbedUnimplementedOwnerServer() {}
 
@@ -158,6 +173,24 @@ func _Owner_Delete_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Owner_GetPets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OwnerServer).GetPets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Owner_GetPets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OwnerServer).GetPets(ctx, req.(*GetPetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Owner_ServiceDesc is the grpc.ServiceDesc for Owner service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var Owner_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _Owner_Delete_Handler,
+		},
+		{
+			MethodName: "GetPets",
+			Handler:    _Owner_GetPets_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

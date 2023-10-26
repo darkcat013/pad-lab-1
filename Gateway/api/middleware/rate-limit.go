@@ -16,7 +16,7 @@ func GetRateLimitMiddleware(storeClient *redis.Client) gin.HandlerFunc {
 		// Key is user ip, 2 requests per second
 		userIP := c.ClientIP()
 		var limit int64 = 2
-		interval := 3 * time.Second
+		interval := 5 * time.Second
 
 		// Create a unique key for each user
 		key := fmt.Sprintf("ratelimit:%s", userIP)

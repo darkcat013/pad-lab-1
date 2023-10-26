@@ -13,7 +13,9 @@ type Config struct {
 
 	OwnerUrl              string `env:"OWNER_URL" envDefault:"localhost:32769"`
 	VeterinaryUrl         string `env:"VET_URL" envDefault:"localhost:32771"`
-	RedisConnectionString string `env:"REDIS_CONNECTION_STRING" envDefault:""`
+	RedisConnectionString string `env:"REDIS_CONNECTION_STRING" envDefault:"localhost:6379"`
+	RedisRateLimitDb      int    `env:"REDIS_RATE_LIMIT_DB" envDefault:"0"`
+	RedisCacheDb          int    `env:"REDIS_CACHE_DB" envDefault:"1"`
 }
 
 func InitConfig() (Config, error) {

@@ -1,6 +1,10 @@
+using Azure.Core;
 using Grpc.Core;
+using Microsoft.EntityFrameworkCore;
 using OwnerService.Domain;
 using OwnerService.Domain.Entities;
+using OwnerService.Repos;
+using System.Linq;
 
 namespace OwnerService.Services
 {
@@ -8,31 +12,35 @@ namespace OwnerService.Services
     {
         private readonly ILogger<OwnerService> _logger;
         private readonly OwnerDbContext _ownerDbContext;
+        private readonly IOwnerRepo _ownerRepo;
 
-        public OwnerService(ILogger<OwnerService> logger, OwnerDbContext ownerDbContext)
+        public OwnerService(ILogger<OwnerService> logger, OwnerDbContext ownerDbContext, IOwnerRepo ownerRepo)
         {
             _logger = logger;
             _ownerDbContext = ownerDbContext;
+            _ownerRepo = ownerRepo;
         }
 
-        public override Task<RegisterResponse> Register(RegisterRequest request, ServerCallContext context)
+        public override async Task<RegisterResponse> Register(RegisterRequest request, ServerCallContext context)
         {
+            string id = Guid.NewGuid().ToString();
             var owner = new Domain.Entities.Owner
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = id,
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow,
                 Email = request.Email,
             };
             _ownerDbContext.Owners.Add(owner);
-            _ownerDbContext.SaveChanges();
+            await _ownerDbContext.SaveChangesAsync(context.CancellationToken);
 
-            return Task.FromResult(new RegisterResponse { Message = "Register successful" });
+            return new RegisterResponse { Message = "Register successful", OwnerId = id };
         }
 
-        public override Task<RegisterPetResponse> RegisterPet(RegisterPetRequest request, ServerCallContext context)
+
+        public override async Task<RegisterPetResponse> RegisterPet(RegisterPetRequest request, ServerCallContext context)
         {
-            var owner = _ownerDbContext.Owners.FirstOrDefault(x => x.Id == request.OwnerId);
+            var owner = await _ownerRepo.GetOwner(_ownerDbContext, request.OwnerId, request.Email, context.CancellationToken);
 
             if (owner == null)
             {
@@ -49,13 +57,13 @@ namespace OwnerService.Services
                 Type = request.Type,
             });
             _ownerDbContext.Update(owner);
-            _ownerDbContext.SaveChanges();
-            return Task.FromResult(new RegisterPetResponse { Message = "Pet Register successful" });
+            await _ownerDbContext.SaveChangesAsync(context.CancellationToken);
+            return new RegisterPetResponse { Message = "Pet Register successful" };
         }
 
-        public override Task<DeleteResponse> Delete(DeleteRequest request, ServerCallContext context)
+        public override async Task<DeleteResponse> Delete(DeleteRequest request, ServerCallContext context)
         {
-            var owner = _ownerDbContext.Owners.FirstOrDefault(x => x.Id == request.Id);
+            var owner = await _ownerRepo.GetOwner(_ownerDbContext, request.OwnerId, request.Email, context.CancellationToken);
 
             if (owner == null)
             {
@@ -63,9 +71,25 @@ namespace OwnerService.Services
             }
 
             _ownerDbContext.Owners.Remove(owner);
-            _ownerDbContext.SaveChanges();
+            await _ownerDbContext.SaveChangesAsync(context.CancellationToken);
 
-            return Task.FromResult(new DeleteResponse { Message = "Owner deleted successfully" });
+            return new DeleteResponse { Message = "Owner deleted successfully" };
+        }
+
+        public override async Task<GetPetsResponse> GetPets(GetPetsRequest request, ServerCallContext context)
+        {
+            var owner = await _ownerRepo.GetOwner(_ownerDbContext, request.OwnerId, request.Email, context.CancellationToken);
+
+            if (owner == null)
+            {
+                throw new RpcException(new Status(StatusCode.NotFound, "Owner not found"));
+            }
+
+            var pets = owner.Pets.Select(x => new PetResponse { Name = x.Name, Race = x.Race, Type = x.Type });
+
+            var response = new GetPetsResponse { Message = "ok" };
+            response.Pets.AddRange(pets);
+            return response;
         }
     }
 }

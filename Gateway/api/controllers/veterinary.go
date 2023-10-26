@@ -7,6 +7,7 @@ import (
 	"github.com/darkcat013/pad-lab-1/Gateway/services/veterinary"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/veterinary/pb"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -17,13 +18,14 @@ type VeterinaryController interface {
 }
 
 type veterinaryController struct {
-	service veterinary.VeterinaryService
+	service    veterinary.VeterinaryService
+	cacheStore *redis.Client
 }
 
-func NewVeterinaryController(service veterinary.VeterinaryService) VeterinaryController {
+func NewVeterinaryController(service veterinary.VeterinaryService, cacheStore *redis.Client) VeterinaryController {
 	log.Info().Msg("Creating new veterinary controller")
 
-	return &veterinaryController{service}
+	return &veterinaryController{service, cacheStore}
 }
 
 func (c *veterinaryController) MakeAppointment(ctx *gin.Context) {

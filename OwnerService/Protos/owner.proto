@@ -6,6 +6,7 @@ service Owner {
     rpc Register(RegisterRequest) returns (RegisterResponse);
     rpc RegisterPet(RegisterPetRequest) returns (RegisterPetResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetPets(GetPetsRequest) returns (GetPetsResponse);
 }
 
 message RegisterRequest {
@@ -14,13 +15,15 @@ message RegisterRequest {
 
 message RegisterResponse {
     string message = 1;
+    string ownerId = 2;
 }
 
 message RegisterPetRequest {
     string ownerId = 1;
-    string type = 2;
-    string race = 3;
-    string name = 4;
+    string email = 2;
+    string type = 3;
+    string race = 4;
+    string name = 5;
 }
 
 message RegisterPetResponse {
@@ -28,9 +31,26 @@ message RegisterPetResponse {
 }
 
 message DeleteRequest {
-    string id = 1;
+    string ownerId = 1;
+    string email = 2;
 }
 
 message DeleteResponse {
     string message = 1;
+}
+
+message GetPetsRequest {
+    string ownerId = 1;
+    string email = 2;
+}
+
+message PetResponse {
+    string Type = 1;
+    string Race = 2;
+    string Name = 3;
+}
+
+message GetPetsResponse {
+    string message = 1;
+    repeated PetResponse pets = 2;
 }
