@@ -27,11 +27,13 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"{ex.Message}");
     }
-    // DbInitializer.Initialize(context);
 }
 
 //Add gRPC
 app.MapGrpcService<OwnerService.Services.OwnerService>();
+app.MapGrpcService<OwnerService.Services.NotificationService>();
+app.MapGrpcService<OwnerService.Services.TestService>();
+
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.MapGet("/status", () => new { status = "ok" });

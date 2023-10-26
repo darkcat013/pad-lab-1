@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.4
-// source: proto/owner.proto
+// source: Gateway/proto/owner.proto
 
 package pb
 
@@ -179,5 +179,5 @@ var Owner_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/owner.proto",
+	Metadata: "Gateway/proto/owner.proto",
 }

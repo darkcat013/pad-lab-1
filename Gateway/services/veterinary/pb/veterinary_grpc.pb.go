@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.4
-// source: proto/veterinary.proto
+// source: Gateway/proto/veterinary.proto
 
 package pb
 
@@ -142,5 +142,5 @@ var Veterinary_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/veterinary.proto",
+	Metadata: "Gateway/proto/veterinary.proto",
 }

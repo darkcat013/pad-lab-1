@@ -28,7 +28,6 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"{ex.Message}");
     }
-    // DbInitializer.Initialize(context);
 }
 
 //Add gRPC

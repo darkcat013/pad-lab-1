@@ -1,10 +1,9 @@
 package veterinary
 
 import (
-	"context"
-
 	"github.com/darkcat013/pad-lab-1/Gateway/config"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/veterinary/pb"
+	"github.com/darkcat013/pad-lab-1/Gateway/utils"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -34,7 +33,8 @@ func NewVeterinaryService(cfg config.Config) VeterinaryService {
 
 func (s *veterinaryService) SendMakeAppointmentRequest(request *pb.MakeAppointmentRequest) (string, error) {
 
-	ctx := context.Background()
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
 
 	response, err := s.client.MakeAppointment(ctx, request)
 	if err != nil {
@@ -47,7 +47,8 @@ func (s *veterinaryService) SendMakeAppointmentRequest(request *pb.MakeAppointme
 
 func (s *veterinaryService) SendEndAppointmentRequest(request *pb.EndAppointmentRequest) (string, error) {
 
-	ctx := context.Background()
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
 
 	response, err := s.client.EndAppointment(ctx, request)
 	if err != nil {

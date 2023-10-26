@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Microsoft.EntityFrameworkCore;
 using OwnerService.Domain;
 using OwnerService.Domain.Entities;
 

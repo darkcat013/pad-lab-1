@@ -13,20 +13,10 @@ import (
 	"github.com/darkcat013/pad-lab-1/Gateway/api/controllers"
 	"github.com/darkcat013/pad-lab-1/Gateway/config"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/owner"
+	"github.com/darkcat013/pad-lab-1/Gateway/services/test"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/veterinary"
 	"github.com/rs/zerolog/log"
 )
-
-// type OwnerServer struct {
-// 	owner.UnsafeOwnerServer
-// }
-
-// func (s OwnerServer) Create(ctx context.Context, req *owner.CreateRequest) (*owner.CreateResponse, error) {
-
-// 	return &owner.CreateResponse{
-// 		Response: "test",
-// 	}, nil
-// }
 
 func main() {
 	cfg, err := config.InitConfig()
@@ -45,22 +35,10 @@ func main() {
 	veterinaryService := veterinary.NewVeterinaryService(cfg)
 	veterinaryController := controllers.NewVeterinaryController(veterinaryService)
 
-	srv := api.NewServer(cfg, ownerController, veterinaryController)
+	testService := test.NewTestService(cfg)
+	testController := controllers.NewTestController(testService)
 
-	// lis, err := net.Listen("tcp", ":8089")
-	// if err != nil {
-	// 	log.Fatalf("cannot create listener: %s", err)
-	// }
-
-	// serverRegistrar := grpc.NewServer()
-	// server := &OwnerServer{}
-
-	// owner.RegisterOwnerServer(serverRegistrar, server)
-
-	// err = serverRegistrar.Serve(lis)
-	// if err != nil {
-	// 	log.Fatalf("impossible to serve: %s", err)
-	// }
+	srv := api.NewServer(cfg, ownerController, veterinaryController, testController)
 
 	go func() {
 		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
@@ -81,10 +59,6 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal().Err(err).Msg("Server forced to shutdown")
 	}
-
-	// if err := data.CloseDB(db); err != nil {
-	// 	log.Fatal().Err(err).Msg("Failed to close db connection")
-	// }
 
 	log.Info().Msg("Server exited properly")
 }

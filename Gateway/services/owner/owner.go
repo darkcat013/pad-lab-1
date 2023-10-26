@@ -1,10 +1,9 @@
 package owner
 
 import (
-	"context"
-
 	"github.com/darkcat013/pad-lab-1/Gateway/config"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/owner/pb"
+	"github.com/darkcat013/pad-lab-1/Gateway/utils"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,7 +34,8 @@ func NewOwnerService(cfg config.Config) OwnerService {
 
 func (s *ownerService) SendRegisterRequest(request *pb.RegisterRequest) (string, error) {
 
-	ctx := context.Background()
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
 
 	response, err := s.client.Register(ctx, request)
 	if err != nil {
@@ -48,7 +48,8 @@ func (s *ownerService) SendRegisterRequest(request *pb.RegisterRequest) (string,
 
 func (s *ownerService) SendRegisterPetRequest(request *pb.RegisterPetRequest) (string, error) {
 
-	ctx := context.Background()
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
 
 	response, err := s.client.RegisterPet(ctx, request)
 	if err != nil {
@@ -61,7 +62,8 @@ func (s *ownerService) SendRegisterPetRequest(request *pb.RegisterPetRequest) (s
 
 func (s *ownerService) SendDeleteRequest(request *pb.DeleteRequest) (string, error) {
 
-	ctx := context.Background()
+	ctx, cancel := utils.GetDeadlineContext()
+	defer cancel()
 
 	response, err := s.client.Delete(ctx, request)
 	if err != nil {

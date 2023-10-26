@@ -10,7 +10,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func NewServer(cfg config.Config, ownerController controllers.OwnerController, veterinaryController controllers.VeterinaryController) *http.Server {
+func NewServer(cfg config.Config,
+	ownerController controllers.OwnerController,
+	veterinaryController controllers.VeterinaryController,
+	testController controllers.TestController) *http.Server {
+
 	log.Info().Msg("Creating new server")
 
 	e := gin.Default()
@@ -20,6 +24,7 @@ func NewServer(cfg config.Config, ownerController controllers.OwnerController, v
 
 	registerOwnerRoutes(r, ownerController)
 	registerVeterinaryRoutes(r, veterinaryController)
+	registerTestRoutes(r, testController)
 
 	return &http.Server{
 		Addr:    ":" + cfg.Port,
@@ -38,4 +43,11 @@ func registerVeterinaryRoutes(router *gin.RouterGroup, c controllers.VeterinaryC
 	r := router.Group("/veterinary")
 	r.POST("/make-appointment", c.MakeAppointment)
 	r.POST("/end-appointment", c.EndAppointment)
+}
+
+func registerTestRoutes(router *gin.RouterGroup, c controllers.TestController) {
+	r := router.Group("/test")
+	r.GET("/timeout", c.TestTimeout)
+	r.GET("/rate-limit", c.TestRateLimit)
+	r.GET("/circuit-breaker", c.TestCircuitBreaker)
 }

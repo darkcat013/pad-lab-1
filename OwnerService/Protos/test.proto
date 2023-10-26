@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "OwnerService";
+
+service Test {
+    rpc TestTimeout(TestTimeoutRequest) returns (TestTimeoutResponse);
+    rpc TestRateLimit(TestRateLimitRequest) returns (TestRateLimitResponse);
+    rpc TestCircuitBreaker(TestCircuitBreakerRequest) returns (TestCircuitBreakerResponse);
+
+}
+
+message TestTimeoutRequest {
+}
+
+message TestTimeoutResponse {
+}
+
+message TestRateLimitRequest {
+}
+
+message TestRateLimitResponse {
+}
+
+message TestCircuitBreakerRequest {
+}
+
+message TestCircuitBreakerResponse {
+}
