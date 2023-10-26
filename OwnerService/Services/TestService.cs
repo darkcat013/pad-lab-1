@@ -18,12 +18,12 @@ namespace OwnerService.Services
 
         public override Task<TestRateLimitResponse> TestRateLimit(TestRateLimitRequest request, ServerCallContext context)
         {
-            return base.TestRateLimit(request, context);
+            return Task.FromResult(new TestRateLimitResponse());
         }
 
         public override Task<TestCircuitBreakerResponse> TestCircuitBreaker(TestCircuitBreakerRequest request, ServerCallContext context)
         {
-            return base.TestCircuitBreaker(request, context);
+            return Task.FromResult(new TestCircuitBreakerResponse());
         }
     }
 }

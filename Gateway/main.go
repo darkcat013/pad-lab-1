@@ -11,6 +11,7 @@ import (
 
 	"github.com/darkcat013/pad-lab-1/Gateway/api"
 	"github.com/darkcat013/pad-lab-1/Gateway/api/controllers"
+	"github.com/darkcat013/pad-lab-1/Gateway/cache"
 	"github.com/darkcat013/pad-lab-1/Gateway/config"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/owner"
 	"github.com/darkcat013/pad-lab-1/Gateway/services/test"
@@ -24,11 +25,6 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to load config")
 	}
 
-	// redis, err := redis.NewDB(cfg)
-	// if err != nil {
-	// 	log.Fatal().Err(err).Msg("Failed to connect to database")
-	// }
-
 	ownerService := owner.NewOwnerService(cfg)
 	ownerController := controllers.NewOwnerController(ownerService)
 
@@ -38,7 +34,9 @@ func main() {
 	testService := test.NewTestService(cfg)
 	testController := controllers.NewTestController(testService)
 
-	srv := api.NewServer(cfg, ownerController, veterinaryController, testController)
+	rateLimitClient := cache.GetRateLimitStore(cfg)
+
+	srv := api.NewServer(cfg, ownerController, veterinaryController, testController, rateLimitClient)
 
 	go func() {
 		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {

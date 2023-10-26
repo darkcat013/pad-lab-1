@@ -7,19 +7,24 @@ import (
 	"github.com/darkcat013/pad-lab-1/Gateway/api/middleware"
 	"github.com/darkcat013/pad-lab-1/Gateway/config"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 )
 
 func NewServer(cfg config.Config,
 	ownerController controllers.OwnerController,
 	veterinaryController controllers.VeterinaryController,
-	testController controllers.TestController) *http.Server {
+	testController controllers.TestController,
+	rateLimitStore *redis.Client) *http.Server {
 
 	log.Info().Msg("Creating new server")
 
-	e := gin.Default()
-	e.Use(middleware.CORS(cfg.AllowOrigin))
+	rateLimitMiddleware := middleware.GetRateLimitMiddleware(rateLimitStore)
 
+	e := gin.Default()
+	e.ForwardedByClientIP = true
+	e.Use(middleware.CORS(cfg.AllowOrigin))
+	e.Use(rateLimitMiddleware)
 	r := e.Group("/api")
 
 	registerOwnerRoutes(r, ownerController)
