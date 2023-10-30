@@ -1,12 +1,10 @@
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Moq;
+using NUnit.Framework;
 using OwnerService;
 using OwnerService.Domain;
-using OwnerService.Domain.Entities;
 using OwnerService.Repos;
-using System.Linq.Expressions;
 
 namespace UnitTests
 {

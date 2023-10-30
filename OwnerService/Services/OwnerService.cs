@@ -1,10 +1,7 @@
-using Azure.Core;
 using Grpc.Core;
-using Microsoft.EntityFrameworkCore;
 using OwnerService.Domain;
 using OwnerService.Domain.Entities;
 using OwnerService.Repos;
-using System.Linq;
 
 namespace OwnerService.Services
 {

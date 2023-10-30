@@ -1,4 +1,4 @@
-# Laboratory work nr. 1 on Distributed Systems Programming
+# Laboratory work nr. 1 and 2 on Distributed Systems Programming
 
 ## Setup
 
@@ -9,6 +9,7 @@
 Run the commands
 
 ```ps
+make go_protoc
 linkerd install --crds | kubectl apply -f -
 linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
 ```
@@ -27,9 +28,145 @@ Enjoy.
 linkerd uninject k8s.yaml | kubectl delete -f -
 ```
 
+## Run unit tests
+
+```ps
+dotnet test OwnerService
+```
+
 ## Veterinary clinics services and pet data management
 
 Distributed app for veterinary clinics and pet data management. Includes pet registration, appointments, notifications/emails about pet vaccination, pet records update after each consultation.
+
+## Endpoints
+
+[Postman collection](./endpoints.postman_collection.json)
+
+### Status endpoint
+
+Health check endpoint for all services
+```
+Endpoint: /status
+Method: GET
+Response: 200 OK
+Body: {
+    "status": "ok"
+}
+```
+
+### API Gateway
+
+Owner service endpoints from gateway
+```
+Endpoint: /api/owner/register
+Method: POST
+Payload: {
+    "email": "email@asd.com"
+}
+Response: 201 Created
+Body: {
+    "message": "Register successful",
+    "ownerId": "0b2f4780-46f0-4d0f-806a-2b3033f9b285"
+}
+```
+
+```
+Endpoint: /api/owner/register-pet
+Method: POST
+Payload: {
+    "email": "{{email}}",
+    "type": "Dog",
+    "race": "Chihuaua",
+    "name": "Devil incarnate"
+}
+Response: 201 Created
+Body: {
+    "message": "Pet Register successful"
+}
+```
+
+```
+Endpoint: /api/owner/{{email}}/pets
+Method: GET
+Response: 200 OK
+Body: {
+    "message": "ok",
+    "pets": [
+        {
+            "Type": "Dog",
+            "Race": "Chihuaua",
+            "Name": "Devil incarnate"
+        }
+    ]
+}
+```
+
+```
+Endpoint: /api/owner/remove-data/{{email}}
+Method: DELETE
+Response: 200 OK
+Body: {
+    "message": "Owner deleted successfully"
+}
+```
+
+Veterinary service endpoints from gateway
+```
+Endpoint: /api/veterinary/make-appointment
+Method: POST
+Payload: {
+    "petId": "1",
+    "dateTime": "2023-09-09T13:00:00.000Z"
+}
+Response: 201 Created
+Body: {
+    "message": "Appointment made"
+}
+```
+
+```
+Endpoint: /end-appointment
+Method: POST
+Payload: {
+    "appointmentId": "73346b7d-288e-4ec3-a801-042576603372",
+    "details": "dog is evil"
+}
+Response: 200 OK
+Body: {
+    "message": "Appointment ended"
+}
+```
+
+Test endpoints
+
+```
+Endpoint: /api/test/timeout
+Method: GET
+Response: 408 Request Timeout
+Body: {
+    "error": "Request timed out"
+}
+```
+
+```
+Spam this until you get 429
+
+Endpoint: /api/test/rate-limit
+Method: GET
+Response: 429 Too Many Requests
+Body: {
+    "error": "You're being rate limited"
+}
+```
+
+```
+Endpoint: /api/test/circuit-breaker
+Method: GET
+Response: 500 Internal Server Error
+Body: {
+    "error": "Exception thrown on purpose"
+}
+```
 
 ## Application Suitability
 
@@ -45,127 +182,18 @@ Microservice architecture is suitable for veterinary clinic services and pet dat
 - If you need to integrate with external systems like governmental services or payments, having independent microservices can make it easier to manage these integrations without affecting the entire system.
 
 ## Service boundaries
+
 ![Architecture Diagram](./architecture-diagram.png)
+
 ## Technology Stack and Communication Patterns
 
 The services will be written in C# and will use SQL server as a database. The API Gateway, Service Discovery and Load Balancers will be written in Go. Additionally, the API Gateway will have a cache in Redis.
 
 The communication between client and API Gateway will be done using REST while the communication between services will be done via gRPC.
+
 ## Data Management
+
 The Owner Service and Veterinary service will have their own databases. The Gateway will have a Redis Cache to return some cached requests. All messages wil be in JSON format.
-
-## Endpoints
-
-### Status endpoint
-
-Health check endpoint for all services
-```
-Endpoint: /status
-Method: GET
-Response: 200 OK
-Response: 503 Service Unavailable
-```
-
-### Service Discovery
-Endpoint: /registerService
-Method: POST
-Payload: {
-    "name": "vet-service-1",
-}
-
-### API Gateway
-
-Owner service endpoints from gateway
-```
-Endpoint: /register
-Method: POST
-Payload: {
-    "email": "email@asd.com"
-}
-Response: 201 Created
-```
-
-```
-Endpoint: /register-pet
-Method: POST
-Payload: {
-    "type": "Dog",
-    "race": "Chihuaua",
-    "name": "Devil incarnate"
-}
-Response: 201 Created
-```
-
-```
-Endpoint: /remove-data/{ownerId}
-Method: DELETE
-Response: 204 No Content
-```
-
-Veterinary service endpoints from gateway
-```
-Endpoint: /make-appointment
-Method: POST
-Payload: {
-    "petId": 1,
-    "dateTime": "2023-28-09T13:00Z"
-}
-Response: 201 Created
-```
-
-```
-Endpoint: /end-appointment
-Method: POST
-Payload: {
-    "appointmentId": 1,
-    "details: "dog is evil"
-}
-Response: 201 Created
-```
-
-### Load Balancer
-
-```
-Endpoint: /addService
-Method: POST
-Payload: {
-    "name": "vet-service-1"
-}
-Response: 200 OK
-```
-
-```
-Endpoint: /deleteService
-Method: POST
-Payload: {
-    "name": "vet-service-1"
-}
-Response: 200 OK
-```
-
-```
-Endpoint: /forwardRequest
-Method: POST
-Payload: {
-    "endpoint": "/some-endpoint",
-    "payload":{some-obj}
-}
-Response: 200 OK
-Response: 404 Not Found
-```
-
-### Owner Service
-
-```
-Endpoint: /sendNotification
-Method: POST
-Payload: {
-    "type": ["email", "sms"],
-    "petIds": [1, 10, 20],
-    "message": "vaccinate your pet, you can make an appointment at vet.com"
-}
-Response: 200 OK
-```
 
 ## Deployment and Scaling
 
@@ -201,3 +229,13 @@ Containerization (Docker) and orchestration (Kubernetes) will be used for Deploy
 14. [Phil Sturgeon. ”Understanding RPC Vs REST For HTTP APIs”.](https://www.smashingmagazine.com/2016/09/understanding-rest-and-rpc-for-http-apis/)
 
 15. [”Pattern: Health Check API”.](https://microservices.io/patterns/observability/health-check-api.html)
+
+16. [Keyang Xiang. “Patterns for distributed transactions within a microservices architecture.](https://developers.redhat.com/blog/2018/10/01/patterns-for-distributed-transactions-within-a-microservices-architecture)
+17. [Ben Lutkevich. “database replication”.](https://searchdatamanagement.techtarget.com/definition/database-replication)
+18. [Elasticsearch. “What is the ELK Stack?”.](https://www.elastic.co/what-is/elk-stack)
+19. [Cloud Native Computing Foundation. “Prometheus”.](https://prometheus.io)
+20. [Grafana Labs. “Grafana”.](https://grafana.com)
+21. [Redis. “Replication”.](https://redis.io/topics/replication)
+22. [Juan Pablo Carzolio. “The Ultimate Guide to Consistent Hashing”.](https://www.toptal.com/big-data/consistent-hashing)
+23. [l3a0. “Distributing a Cache”.](https://blog.baowebdev.com/2019/04/distributing-a-cache)
+24. [“What is a data warehouse”.](https://www.ibm.com/topics/data-warehouse)
