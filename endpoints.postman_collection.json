@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": {{email}}\r\n}",
+					"raw": "{\r\n    \"email\": \"{{email}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -176,7 +176,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/test/timeout",
+					"raw": "http://localhost:8080/api/status",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -184,8 +184,7 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"test",
-						"timeout"
+						"status"
 					]
 				}
 			},
