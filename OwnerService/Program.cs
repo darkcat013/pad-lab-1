@@ -8,8 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 // Initialize EF Core
 builder.Services.AddDbContext<OwnerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"))
-            .UseLazyLoadingProxies());
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"), 
+                         providerOptions => providerOptions.EnableRetryOnFailure())
+                .UseLazyLoadingProxies());
 builder.Services.AddScoped<IOwnerRepo, OwnerRepo>();
 
 var app = builder.Build();

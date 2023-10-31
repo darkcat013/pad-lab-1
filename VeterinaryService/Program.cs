@@ -8,8 +8,9 @@ builder.Services.AddGrpc();
 
 // Initialize EF Core
 builder.Services.AddDbContext<VeterinaryDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"))
-    .UseLazyLoadingProxies());
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"),
+                         providerOptions => providerOptions.EnableRetryOnFailure())
+                .UseLazyLoadingProxies());
 
 
 var app = builder.Build();

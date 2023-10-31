@@ -1,24 +1,4 @@
 apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: gateway
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: gateway
-  template:
-    metadata:
-      labels:
-        app: gateway
-    spec:
-      containers:
-      - name: gateway
-        image: darkcat013/gateway:latest
-        ports:
-        - containerPort: 8080
----
-apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
@@ -141,19 +121,6 @@ spec:
       targetPort: 1433
   type: ClusterIP
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: gateway
-spec:
-  selector:
-    app: gateway
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
-  type: LoadBalancer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -169,13 +136,11 @@ spec:
         app: owner
     spec:
       containers:
-      - name: owner
-        image: darkcat013/owner:latest
-        ports:
-        - containerPort: 32769
-        - containerPort: 32768
-        - containerPort: 80
-        - containerPort: 443
+        - name: owner
+          image: darkcat013/owner:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
 ---
 apiVersion: v1
 kind: Service
@@ -185,22 +150,14 @@ spec:
   selector:
     app: owner
   ports:
-  - name: owner-port-32769
-    protocol: TCP
-    port: 32769
-    targetPort: 32769
-  - name: owner-port-32768
-    protocol: TCP
-    port: 32768
-    targetPort: 32768
-  - name: owner-port-80
-    protocol: TCP
-    port: 80
-    targetPort: 80
-  - name: owner-port-443
-    protocol: TCP
-    port: 443
-    targetPort: 443
+    - name: owner-port-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: owner-port-443
+      protocol: TCP
+      port: 443
+      targetPort: 443
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -218,13 +175,11 @@ spec:
         app: vet
     spec:
       containers:
-      - name: vet
-        image: darkcat013/vet:latest
-        ports:
-        - containerPort: 32771
-        - containerPort: 32770
-        - containerPort: 80
-        - containerPort: 443
+        - name: vet
+          image: darkcat013/vet:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
 ---
 apiVersion: v1
 kind: Service
@@ -234,20 +189,46 @@ spec:
   selector:
     app: vet
   ports:
-  - name: vet-port-32771
-    protocol: TCP
-    port: 32771
-    targetPort: 32771
-  - name: vet-port-32770
-    protocol: TCP
-    port: 32770
-    targetPort: 32770
-  - name: owner-port-80
-    protocol: TCP
-    port: 80
-    targetPort: 80
-  - name: owner-port-443
-    protocol: TCP
-    port: 443
-    targetPort: 443
+    - name: owner-port-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: owner-port-443
+      protocol: TCP
+      port: 443
+      targetPort: 443
   type: ClusterIP
+  apiVersion: apps/v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: darkcat013/gateway:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer

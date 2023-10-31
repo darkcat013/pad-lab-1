@@ -9,15 +9,13 @@
 Run the commands
 
 ```ps
-make go_protoc
-linkerd install --crds | kubectl apply -f -
-linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
+make init
 ```
 
 ## Start the app
 
 ```ps
-linkerd inject k8s.yaml | kubectl apply -f -
+make run
 ```
 
 Enjoy.
@@ -25,13 +23,13 @@ Enjoy.
 ## Stop the app
 
 ```ps
-linkerd uninject k8s.yaml | kubectl delete -f -
+make stop
 ```
 
 ## Run unit tests
 
 ```ps
-dotnet test OwnerService
+make tests
 ```
 
 ## Veterinary clinics services and pet data management
