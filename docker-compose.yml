@@ -49,4 +49,24 @@ services:
       - redis
     ports:
       - 8080:8080
-  
+
+  prometheus:
+    image: prom/prometheus
+    command:
+      - "--config.file=/etc/k8s.yml"
+    ports:
+      - 9090:9090
+    # volumes:
+    #   - ./prometheus:/etc/prometheus
+    #   - prom_data:/prometheus
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3010:3010
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=123qweASD
+      - GF_AUTH_BASIC_ENABLED=false
+    # volumes:
+    #   - ./grafana:/etc/grafana/provisioning/
